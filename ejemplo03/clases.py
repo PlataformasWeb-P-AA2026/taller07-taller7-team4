@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 
 
 # se importa información del archivo configuracion
-from config import cadena_base_datos
+from configuracion import cadena_base_datos
 
 engine = create_engine(cadena_base_datos)
 
@@ -17,12 +17,17 @@ class Departamento(Base):
     id       = Column(Integer, primary_key=True)
     nombre   = Column(String(100))
     cursos   = relationship('Curso', back_populates='departamento')
+    def __repr__(self):
+        return "Departamento: id=%d nombre=%s" % (self.id, self.nombre)
+
 
 class Instructor(Base):
     __tablename__ = 'instructor'
     id       = Column(Integer, primary_key=True)
     nombre   = Column(String(200))
     cursos   = relationship('Curso', back_populates='instructor')
+    def __repr__(self):
+        return "Instructor: id=%d nombre=%s" % (self.id, self.nombre)
 
 class Curso(Base):
     __tablename__ = 'curso'
@@ -34,6 +39,9 @@ class Curso(Base):
     instructor      = relationship('Instructor',  back_populates='cursos')
     inscripciones   = relationship('Inscripcion', back_populates='curso')
     tareas          = relationship('Tarea',       back_populates='curso')
+    def __repr__(self):
+        return "Curso: id=%d titulo=%s" % (self.id, self.titulo)
+
 
 class Estudiante(Base):
     __tablename__ = 'estudiante'
@@ -41,6 +49,8 @@ class Estudiante(Base):
     nombre         = Column(String(200))
     inscripciones  = relationship('Inscripcion', back_populates='estudiante')
     entregas       = relationship('Entrega',     back_populates='estudiante')
+    def __repr__(self):
+        return "Estudiante: id=%d nombre=%s" % (self.id, self.nombre)
 
 class Inscripcion(Base):
     __tablename__ = 'inscripcion'
@@ -49,6 +59,9 @@ class Inscripcion(Base):
     fecha_inscripcion = Column(DateTime)
     estudiante    = relationship('Estudiante', back_populates='inscripciones')
     curso         = relationship('Curso',      back_populates='inscripciones')
+    def __repr__(self):
+        return "Inscripcion: estudiante_id=%d curso_id=%d" % (
+                self.estudiante_id, self.curso_id)
 
 class Tarea(Base):
     __tablename__ = 'tarea'
@@ -58,6 +71,8 @@ class Tarea(Base):
     fecha_entrega = Column(DateTime)
     curso     = relationship('Curso',    back_populates='tareas')
     entregas  = relationship('Entrega',  back_populates='tarea')
+    def __repr__(self):
+        return "Tarea: id=%d titulo=%s" % (self.id, self.titulo)
 
 class Entrega(Base):
     __tablename__ = 'entrega'
@@ -68,5 +83,7 @@ class Entrega(Base):
     calificacion = Column(Numeric)
     tarea        = relationship('Tarea',     back_populates='entregas')
     estudiante   = relationship('Estudiante',back_populates='entregas')
+    def __repr__(self):
+        return "Entrega: id=%d calificacion=%s" % (self.id, str(self.calificacion))
 
 Base.metadata.create_all(engine)
